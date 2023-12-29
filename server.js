@@ -20,9 +20,8 @@ const plants = [new Plant('American bellflower', 'Campanulastrum americanum', 'P
 //Creating IDs for all the plants
 plants.forEach((plant, index) => plant.id = index + 1);
 
-
-
 app.get('/plants/:id', (request, response) => {
+  //Setting up our id path parameter to be able to take a numeric id or the plant's common name.
   const requestId = Number(request.params?.id) || request.params?.id.toLowerCase();
   console.log(requestId);
   if (plants.some(plant => plant.id === requestId)) {
