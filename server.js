@@ -12,6 +12,10 @@ class Plant {
     this.description = description;
     this.descriptionCite = `Illinois Department of Natural Resources. ${citeYear}. Native Plant Information. Retrieved from ${url}`;
   }
+  
+  lowerCaseAndRemoveSpace(prop) {
+    return this[prop].toLowerCase().split(' ').join('');
+  }
 }
 
 //Creating the array of plant objects
@@ -20,18 +24,27 @@ const plants = [new Plant('American bellflower', 'Campanulastrum americanum', 'P
 //Creating IDs for all the plants
 plants.forEach((plant, index) => plant.id = index + 1);
 
-app.get('/plants/:id', (request, response) => {
-  //Setting up our id path parameter to be able to take a numeric id or the plant's common name.
-  const requestId = Number(request.params?.id) || request.params?.id.toLowerCase();
-  console.log(requestId);
+
+app.get('/plants/byId/:id', (request, response) => {
+  const requestId = Number(request.params?.id)
+  
   if (plants.some(plant => plant.id === requestId)) {
     response.json(plants[requestId - 1]);
-  } else if (plants.some(plant => plant.commonName.split(' ').join('').toLowerCase() === requestId)){
-    console.log((plants.find(plant => plant.commonName.split(' ').join('').toLowerCase() === requestId)))
-    response.json(plants.find(plant => plant.commonName.split(' ').join('').toLowerCase() === requestId));
   } else {
     response.status(404).sendFile(__dirname + '/404.html');
   }
 });
+
+app.get('/plants/byName/:name', (request, response) => {
+  //Decoding any spaces within the endpoint the client requested.
+  const requestName = decodeURIComponent(request.params.name.toLowerCase().split(' ').join(''));
+  const plant = plants.find(plant => plant.lowerCaseAndRemoveSpace('commonName') === requestName);
+  console.log(requestName, plant);
+  if (plant) {
+    response.json(plant);
+  } else {
+    response.status(404).sendFile(__dirname + '/404.html');
+  }
+}) 
 
 app.listen(process.env.PORT || 2277);
