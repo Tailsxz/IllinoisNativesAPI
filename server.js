@@ -31,7 +31,7 @@ app.get('/plants/byId/:id', (request, response) => {
   if (plants.some(plant => plant.id === requestId)) {
     response.json(plants[requestId - 1]);
   } else {
-    response.status(404).sendFile(__dirname + '/404.html');
+    response.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
   }
 });
 
@@ -43,7 +43,7 @@ app.get('/plants/byName/:name', (request, response) => {
   if (plant) {
     response.json(plant);
   } else {
-    response.status(404).sendFile(__dirname + '/404.html');
+    response.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
   }
 }) 
 
