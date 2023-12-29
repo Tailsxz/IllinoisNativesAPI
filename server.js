@@ -27,7 +27,9 @@ plants.forEach((plant, index) => plant.id = index + 1);
 
 app.get('/plants/byId/:id', (request, response) => {
   const requestId = Number(request.params?.id)
-  
+  if (isNaN(requestId)) {
+    return response.status(404).json({error: 'Please only use numbers for the id path'});
+  }
   if (plants.some(plant => plant.id === requestId)) {
     response.json(plants[requestId - 1]);
   } else {
@@ -37,9 +39,14 @@ app.get('/plants/byId/:id', (request, response) => {
 
 app.get('/plants/byName/:name', (request, response) => {
   //Decoding any spaces within the endpoint the client requested.
-  const requestName = decodeURIComponent(request.params.name.toLowerCase().split(' ').join(''));
+  // const requestName = decodeURIComponent(request.params.name.toLowerCase().split(' ').join(''));
+  //sanitizing inputs
+  const alphas = 'abcdefghijklmnopqrstuvwxyz'
+  const requestName = request.params.name.toLowerCase().split('').filter((char) => alphas.includes(char)).join('');
   const plant = plants.find(plant => plant.lowerCaseAndRemoveSpace('commonName') === requestName);
+
   console.log(requestName, plant);
+  
   if (plant) {
     response.json(plant);
   } else {
