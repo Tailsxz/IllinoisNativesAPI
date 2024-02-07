@@ -18,9 +18,9 @@ let db, collection;
 async function startDB() {
   try {   
     await client.connect();
+    console.log('Database connected...');
 
     await client.db('admin').command({ ping: 1 });
-    console.log('Database connected...');
     
     db = client.db('ILNatives');
     collection = db.collection('plants');
@@ -30,7 +30,7 @@ async function startDB() {
 }
 startDB();
 
-app.use(morgan('tiny'));
+app.use(morgan('dev'));
 app.use(express.static('public'));
 
 function filterPlant(plant) {
@@ -47,6 +47,7 @@ app.get('/plants/byId/:id', async (req, res) => {
   try {
     const plant = await collection.findOne({ id });
     filterPlant(plant);
+    console.log(`Accessing the plants collection`);
 
     res.json(plant);
     
@@ -61,9 +62,7 @@ app.get('/plants/byId/:id', async (req, res) => {
 });
 
 app.get('/plants/byName/:name', async (req, res) => {
-  //Decoding any spaces within the endpoint the client reqed.
-  // const reqName = decodeURIComponent(req.params.name.toLowerCase().split(' ').join(''));
-  //sanitizing inputs
+  //Attempt at input sanitization
   const alphas = 'abcdefghijklmnopqrstuvwxyz'
   const reqName = req.params.name.toLowerCase().split('').filter((char) => alphas.includes(char)).join('');
   
@@ -72,6 +71,8 @@ app.get('/plants/byName/:name', async (req, res) => {
     filterPlant(plant);
 
     if (plant) {
+      console.log(`Accessing the plants collection`);
+
       res.json(plant);
     } else {
       res.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
@@ -80,11 +81,6 @@ app.get('/plants/byName/:name', async (req, res) => {
   } catch (err) {
     console.error(err);
   }
-  // if (plant) {
-  //   res.json(plant);
-  // } else {
-  //   
-  // }
 }) 
 
 app.listen(process.env.PORT);

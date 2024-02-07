@@ -22,7 +22,7 @@ To get a copy of this project, you can fork the repo then clone it as your own.
 [Install the Dependencies](https://docs.npmjs.com/cli/v8/commands/npm-install) using npm install in your command line
 
 ### Optimizations
-Planning to migrate to mongoDB instead of storing the plants in an array on the server.
+Might try migrating to using mongoose next to see how the experience is. Might restructure the whole project to follow the MVC pattern.
 
 ### Knowledge gained from this project
-
+Got experience going from adding and storing the plants by hand on the server to migrating to storing the plants on a database.
