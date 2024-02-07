@@ -1,7 +1,12 @@
-const plants = require('./plants')
 const express = require('express');
+const plants = require('./plants');
+const { connectDB } = require('./config/db');
+
+require('dotenv').config({ path: './config/.env' });
 
 const app = express();
+
+connectDB();
 
 app.use(express.static('public'));
 

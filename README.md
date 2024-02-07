@@ -21,4 +21,8 @@ To get a copy of this project, you can fork the repo then clone it as your own.
 
 [Install the Dependencies](https://docs.npmjs.com/cli/v8/commands/npm-install) using npm install in your command line
 
+### Optimizations
+Planning to migrate to mongoDB instead of storing the plants in an array on the server.
+
 ### Knowledge gained from this project
+
