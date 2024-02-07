@@ -3,6 +3,11 @@ const morgan = require('morgan');
 const { MongoClient } = require('mongodb');
 const plants = require('./plants');
 
+plants.forEach(plant => {
+  const queryName = plant.lowerCaseAndRemoveSpace('commonName');
+  plant.queryName = queryName;
+});
+
 require('dotenv').config({ path: './config/.env' });
 
 const app = express();
@@ -19,7 +24,6 @@ async function startDB() {
     
     db = client.db('ILNatives');
     collection = db.collection('plants');
-
   } catch(err) {
     console.error(err);
   }
@@ -29,6 +33,12 @@ startDB();
 app.use(morgan('tiny'));
 app.use(express.static('public'));
 
+function filterPlant(plant) {
+  delete plant.queryName;
+  delete plant._id;
+  delete plant.id;
+}
+
 app.get('/plants/byId/:id', async (req, res) => {
   const id = Number(req.params?.id)
   if (isNaN(id)) {
@@ -36,8 +46,7 @@ app.get('/plants/byId/:id', async (req, res) => {
   }
   try {
     const plant = await collection.findOne({ id });
-    delete plant._id;
-    delete plant.id;
+    filterPlant(plant);
 
     res.json(plant);
     
@@ -51,21 +60,31 @@ app.get('/plants/byId/:id', async (req, res) => {
   // }
 });
 
-app.get('/plants/byName/:name', (req, res) => {
+app.get('/plants/byName/:name', async (req, res) => {
   //Decoding any spaces within the endpoint the client reqed.
   // const reqName = decodeURIComponent(req.params.name.toLowerCase().split(' ').join(''));
   //sanitizing inputs
   const alphas = 'abcdefghijklmnopqrstuvwxyz'
   const reqName = req.params.name.toLowerCase().split('').filter((char) => alphas.includes(char)).join('');
-  const plant = plants.find(plant => plant.lowerCaseAndRemoveSpace('commonName') === reqName);
+  
+  try {
+    const plant = await collection.findOne({ queryName: reqName });
+    filterPlant(plant);
 
-  console.log(reqName, plant);
+    if (plant) {
+      res.json(plant);
+    } else {
+      res.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
+    }
 
-  if (plant) {
-    res.json(plant);
-  } else {
-    res.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
+  } catch (err) {
+    console.error(err);
   }
+  // if (plant) {
+  //   res.json(plant);
+  // } else {
+  //   
+  // }
 }) 
 
 app.listen(process.env.PORT);
