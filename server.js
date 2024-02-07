@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const plants = require('./plants');
 const { connectDB } = require('./config/db');
 
@@ -8,6 +9,7 @@ const app = express();
 
 connectDB();
 
+app.use(morgan('tiny'));
 app.use(express.static('public'));
 
 app.get('/plants/byId/:id', (request, response) => {
