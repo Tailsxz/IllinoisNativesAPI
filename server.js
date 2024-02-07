@@ -1,14 +1,34 @@
 const express = require('express');
 const morgan = require('morgan');
+const { MongoClient } = require('mongodb');
 const plants = require('./plants');
-const { connectDB } = require('./config/db');
 
 require('dotenv').config({ path: './config/.env' });
 
 const app = express();
 
-connectDB();
+const client = new MongoClient(process.env.DB_STRING);
+let db, collection;
 
+async function startDB() {
+  try {   
+    await client.connect();
+
+    await client.db('admin').command({ ping: 1 });
+    console.log('Database connected...');
+    
+    db = client.db('ILNatives');
+    collection = db.collection('plants');
+
+  } finally {
+    await client.close();
+  }
+}
+startDB();
+
+async function addPlants() {
+};
+  
 app.use(morgan('tiny'));
 app.use(express.static('public'));
 
@@ -41,4 +61,4 @@ app.get('/plants/byName/:name', (request, response) => {
   }
 }) 
 
-app.listen(process.env.PORT || 2277);
+app.listen(process.env.PORT);
