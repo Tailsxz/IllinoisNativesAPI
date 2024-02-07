@@ -20,13 +20,20 @@ async function startDB() {
     db = client.db('ILNatives');
     collection = db.collection('plants');
 
-  } finally {
-    await client.close();
+    addPlants();
+  } catch(err) {
+    console.error(err);
   }
 }
 startDB();
 
 async function addPlants() {
+  try {
+    const insertManyRes = await collection.insertMany(plants);
+    console.log(insertManyRes.insertedCount, 'documents inserted.')
+  } catch (err) {
+    console.error(err);
+  }
 };
   
 app.use(morgan('tiny'));
