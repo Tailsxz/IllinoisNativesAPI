@@ -1,12 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const { MongoClient } = require('mongodb');
-const plants = require('./plants');
-
-plants.forEach(plant => {
-  const queryName = plant.lowerCaseAndRemoveSpace('commonName');
-  plant.queryName = queryName;
-});
 
 require('dotenv').config({ path: './config/.env' });
 
