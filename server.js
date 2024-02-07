@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const { MongoClient } = require('mongodb');
+const plants = require('./plants')
 
 require('dotenv').config({ path: './config/.env' });
 
@@ -64,16 +65,12 @@ app.get('/plants/byName/:name', async (req, res) => {
     const plant = await collection.findOne({ queryName: reqName });
     filterPlant(plant);
 
-    if (plant) {
-      console.log(`Accessing the plants collection`);
+    console.log(`Accessing the plants collection`);
 
-      res.json(plant);
-    } else {
-      res.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
-    }
-
+    res.json(plant);
   } catch (err) {
     console.error(err);
+    res.status(404).json({error: 'Plant Not Found', message:'Sorry, the requested plant was not found. Please refer to our documentation in our github repo for more information.'})
   }
 }) 
 

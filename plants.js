@@ -12,7 +12,10 @@ class Plant {
   }
   
   lowerCaseAndRemoveSpace(prop) {
-    return this[prop].toLowerCase().split(' ').join('');
+    let name = this[prop].toLowerCase().split(' ').join('');
+    name = name.replaceAll('-', '');
+    name = name.replaceAll('\'', '');
+    return name;
   }
 }
 
