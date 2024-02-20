@@ -1,5 +1,4 @@
-# Project Title
-Illinois Native plants API
+# Illinois Natives
 
 This API serves as a comprehensive resource providing information surrounding the native plants found in Illinois. The API offers endpoints for accessing details specific to each plant.
 
